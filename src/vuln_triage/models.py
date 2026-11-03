@@ -22,3 +22,25 @@ class EpssScore:
     epss: float
     percentile: float
     date: date
+
+
+
+@dataclass(frozen=True)
+class VersionRange:
+    product: str  # "PAN-OS"
+    op: str  # "<" ou ">="
+    version: str  # "11.1.4-h37"
+    status: str  # "affected" ou "fixed"
+
+
+@dataclass(frozen=True)
+class Advisory:
+    cve_id: str
+    vendor: str
+    title: str
+    published: date
+    updated: date
+    cvss: float | None
+    vendor_says_exploited: bool
+    description: str
+    ranges: tuple[VersionRange, ...]
