@@ -13,3 +13,12 @@ class KevEntry:
     date_added: date
     due_date: date
     ransomware: bool
+
+
+
+@dataclass(frozen=True)
+class EpssScore:
+    cve_id: str
+    epss: float
+    percentile: float
+    date: date
