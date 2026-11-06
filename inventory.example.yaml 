@@ -1,0 +1,35 @@
+# Inventaire d'exemple : 4 firewalls fictifs qui couvrent les cas à trier.
+# Les versions sont TOUJOURS entre guillemets (voir la note plus bas).
+
+devices:
+  - name: FW-EDGE-01
+    vendor: paloalto
+    version: "11.1.6"
+    internet_facing: true
+    mgmt_exposed: true          # le pire cas : management joignable d'Internet
+    vpn_portal_enabled: true
+    auth_portal_enabled: false
+
+  - name: FW-EDGE-02
+    vendor: paloalto
+    version: "11.1.6-h39"       # même branche, mais avec le hotfix
+    internet_facing: true
+    mgmt_exposed: false
+    vpn_portal_enabled: true
+    auth_portal_enabled: false
+
+  - name: FW-CORE-01
+    vendor: fortinet
+    version: "7.6.3"
+    internet_facing: false      # firewall interne, rien d'exposé
+    mgmt_exposed: false
+    vpn_portal_enabled: false
+    auth_portal_enabled: false
+
+  - name: FW-BRANCH-01
+    vendor: fortinet
+    version: "7.4.8"            # branche 7.4 : « migrate » chez Fortinet
+    internet_facing: true
+    mgmt_exposed: false
+    vpn_portal_enabled: true
+    auth_portal_enabled: false
