@@ -31,10 +31,10 @@ def gather_advisories(errors: list[str]) -> list[Advisory]:
         ft_urls = fortinet.fetch_index()
     except Exception as exc:
         errors.append(f"Fortinet : index RSS inaccessible ({exc})")
-        ft_urls = []
+        ft_urls = {}
     for url in ft_urls:
         try:
-            advisories.extend(fortinet.parse(fortinet.fetch_csaf(url)))
+            advisories.extend(fortinet.parse(fortinet.fetch_csaf(url), ft_urls[url]))
         except Exception as exc:
             errors.append(f"Fortinet {url} ignoré ({exc})")
 
