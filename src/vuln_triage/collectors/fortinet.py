@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -15,14 +16,19 @@ HEADERS = {"User-Agent": "vuln-triage/0.1 (+https://github.com/Achrafelq/vuln-tr
 VERSION_RE = re.compile(r"\d+(?:\.\d+)+")
 BOUND_RE = re.compile(r"(?P<op><=|>=|<|>)\s*(?P<version>\d+(?:\.\d+)+)")
 REMEDIATION_RE = re.compile(r"^(?P<product>\S+)\s+(?P<branch>\d+\.\d+):\s*(?P<action>.+)$")
+EXPLOITED_RE = re.compile(r"(?<!not )(?<!not been )exploited in the wild", re.IGNORECASE)
 
-
-def fetch_index(timeout: int = 30) -> list[str]:
-    """URLs des fichiers CSAF listés dans le flux RSS."""
+def fetch_index(timeout: int = 30) -> dict[str, str]:
+    """{url du CSAF: texte de l'avis dans le RSS}."""
     resp = requests.get(RSS_URL, headers=HEADERS, timeout=timeout)
     resp.raise_for_status()
     root = ET.fromstring(resp.content)
-    return sorted({el.text.strip() for el in root.iter(CSAF_LINK_TAG) if el.text})
+    index: dict[str, str] = {}
+    for item in root.iter("item"):
+        link = item.find(CSAF_LINK_TAG)
+        if link is not None and link.text:
+            index[link.text.strip()] = item.findtext("description", default="")
+    return index
 
 
 def fetch_csaf(url: str, timeout: int = 30) -> dict:
@@ -30,6 +36,10 @@ def fetch_csaf(url: str, timeout: int = 30) -> dict:
     resp = requests.get(url, headers=HEADERS, timeout=timeout)
     resp.raise_for_status()
     return resp.json()
+
+def _says_exploited(text: str) -> bool:
+    """Le vendeur écrit-il que la faille est exploitée ?"""
+    return bool(EXPLOITED_RE.search(text))
 
 
 def _clean(product_id: str) -> tuple[str, str]:
@@ -73,8 +83,9 @@ def _ranges_from_remediation(details: str) -> list[VersionRange]:
     return out
 
 
-def parse(data: dict) -> list[Advisory]:
+def parse(data: dict, rss_text: str = "") -> list[Advisory]:
     """Un CSAF Fortinet peut couvrir plusieurs CVE : un Advisory par CVE."""
+    exploited = _says_exploited(json.dumps(data) + " " + rss_text)
     doc = data["document"]
     tracking = doc["tracking"]
     published = datetime.fromisoformat(tracking["initial_release_date"]).date()
@@ -115,7 +126,7 @@ def parse(data: dict) -> list[Advisory]:
             published=published,
             updated=updated,
             cvss=acc["cvss"],
-            vendor_says_exploited="exploited in the wild" in acc["description"].lower(),
+            vendor_says_exploited=exploited,
             description=acc["description"],
             ranges=tuple(acc["ranges"]),
         )
@@ -123,10 +134,12 @@ def parse(data: dict) -> list[Advisory]:
     ]
 
 
-def load(urls: list[str] | None = None) -> dict[str, Advisory]:
+def load(index: dict[str, str] | None = None) -> dict[str, Advisory]:
     """Avis Fortinet : ceux demandés, sinon ceux du RSS."""
+    if index is None:
+        index = fetch_index()
     out: dict[str, Advisory] = {}
-    for url in urls if urls is not None else fetch_index():
-        for adv in parse(fetch_csaf(url)):
+    for url, rss_text in index.items():
+        for adv in parse(fetch_csaf(url), rss_text):
             out[adv.cve_id] = adv
     return out
