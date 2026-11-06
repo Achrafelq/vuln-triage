@@ -44,3 +44,16 @@ class Advisory:
     vendor_says_exploited: bool
     description: str
     ranges: tuple[VersionRange, ...]
+
+
+
+@dataclass(frozen=True)
+class Device:
+    name: str  # "FW-TLS-01"
+    vendor: str  # "paloalto" ou "fortinet"
+    product: str  # "PAN-OS" ou "FortiOS"
+    version: str  # "11.1.6-h39", toujours du texte
+    internet_facing: bool  # a au moins une interface sur Internet
+    mgmt_exposed: bool  # interface d'administration joignable depuis Internet
+    vpn_portal_enabled: bool  # GlobalProtect ou SSL-VPN actif
+    auth_portal_enabled: bool  # Authentication Portal / captive portal actif
