@@ -10,14 +10,14 @@ KEV_URL = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulner
 
 
 def fetch(timeout: int = 30) -> dict:
-    """Télécharge le catalogue KEV brut (JSON)."""
+    """Download the raw KEV catalog (JSON)."""
     resp = requests.get(KEV_URL, timeout=timeout)
     resp.raise_for_status()
     return resp.json()
 
 
 def parse(data: dict) -> dict[str, KevEntry]:
-    """Transforme le JSON brut en dict {cve_id: KevEntry}."""
+    """Turn the raw JSON into a dict {cve_id: KevEntry}."""
     entries: dict[str, KevEntry] = {}
     for item in data["vulnerabilities"]:
         entry = KevEntry(

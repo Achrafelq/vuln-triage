@@ -7,11 +7,11 @@ from vuln_triage.models import Device
 
 VERSION_RE = re.compile(r"^(\d+)\.(\d+)(?:\.(\d+))?(?:-h(\d+))?$")
 
-Version = tuple[int, int, int, int]  # (majeur, mineur, maintenance, hotfix)
+Version = tuple[int, int, int, int]  # (major, minor, maintenance, hotfix)
 
 
 def parse_version(text: str) -> Version | None:
-    """'11.1.6-h39' -> (11, 1, 6, 39) ; '7.4.8' -> (7, 4, 8, 0) ; illisible -> None."""
+    """'11.1.6-h39' -> (11, 1, 6, 39); '7.4.8' -> (7, 4, 8, 0); unreadable -> None."""
     m = VERSION_RE.match(text.strip())
     if not m:
         return None
@@ -35,13 +35,13 @@ class Match:
     cve_id: str
     vendor: str
     title: str
-    action: str  # "patch", "migrate" ou "no_fix"
-    fixed_in: str | None  # version à installer quand action == "patch"
-    record: dict  # la fiche complète (KEV, EPSS…), pour le scorer
+    action: str  # "patch", "migrate" or "no_fix"
+    fixed_in: str | None  # version to install when action == "patch"
+    record: dict  # the full record (KEV, EPSS...), for the scorer
 
 
 def check(device: Device, record: dict) -> Match | None:
-    """Ce firewall est-il touché par cet avis ? None si non."""
+    """Is this firewall affected by this advisory? None if not."""
     v = parse_version(device.version)
     if v is None:
         raise ValueError(f"{device.name}: unreadable version {device.version!r}")
@@ -55,7 +55,7 @@ def check(device: Device, record: dict) -> Match | None:
     for r in record["ranges"]:
         if r["product"] != device.product:
             continue
-        if r["op"] == "~":  # Fortinet : « toute la branche 7.4 »
+        if r["op"] == "~":  # Fortinet: "the whole 7.4 branch"
             whole = parse_version(r["version"])
             if whole is None or _branch(whole) != branch:
                 continue
@@ -72,15 +72,15 @@ def check(device: Device, record: dict) -> Match | None:
         elif r["status"] == "fixed" and r["op"] == ">=":
             fixed_points.append((x, r["version"]))
 
-    # Touché si la branche entière est touchée, ou si TOUTES les bornes de la branche sont vraies.
+    # Affected if the whole branch is, or if ALL bounds for the branch hold.
     affected = whole_branch_affected or (
         bool(affected_bounds) and all(_holds(v, op, x) for op, x in affected_bounds)
     )
     if not affected:
         return None
 
-    # Corrigé si un correctif existe sur la même version de maintenance avec un hotfix suffisant,
-    # ou si la version est plus récente que TOUS les correctifs publiés pour la branche.
+    # Fixed if a fix exists on the same maintenance release with a high enough hotfix,
+    # or if the version is newer than ALL fixes published for the branch.
     same_maint = [x for x, _ in fixed_points if x[:3] == v[:3]]
     if any(v >= x for x in same_maint):
         return None
@@ -109,7 +109,7 @@ def check(device: Device, record: dict) -> Match | None:
 
 
 def match_all(devices: list[Device], records: list[dict]) -> list[Match]:
-    """Tous les couples (firewall, CVE) touchés, sans doublon."""
+    """All affected (firewall, CVE) pairs, without duplicates."""
     seen: set[tuple[str, str]] = set()
     matches: list[Match] = []
     for device in devices:

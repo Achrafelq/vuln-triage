@@ -31,7 +31,7 @@ def _todo(s: Scored) -> str:
 
 
 def upgrade_plan(scored: list[Scored], devices: list[Device]) -> list[dict]:
-    """Pour chaque équipement : UNE version cible, et ce qu'elle corrige vraiment."""
+    """For each device: ONE target version, and what it really fixes."""
     plan = []
     for device in devices:
         mine = [s for s in scored if s.match.device == device.name]

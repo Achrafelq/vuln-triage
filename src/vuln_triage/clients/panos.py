@@ -8,11 +8,11 @@ SYSTEM_INFO_CMD = "<show><system><info></info></system></show>"
 
 
 class PanosError(RuntimeError):
-    """Le firewall a répondu, mais pas ce qu'on attendait."""
+    """The firewall answered, but not with what we expected."""
 
 
 def fetch_system_info(host: str, api_key: str, verify: bool | str = True, timeout: int = 15) -> str:
-    """Demande au firewall 'show system info'. La clé part dans un en-tête, jamais dans l'URL."""
+    """Run 'show system info'. The key goes in a header, never in the URL."""
     resp = requests.get(
         f"https://{host}/api/",
         params={"type": "op", "cmd": SYSTEM_INFO_CMD},
@@ -25,7 +25,7 @@ def fetch_system_info(host: str, api_key: str, verify: bool | str = True, timeou
 
 
 def parse_system_info(xml_text: str) -> dict[str, str]:
-    """Extrait nom, modèle et version de la réponse XML."""
+    """Extract hostname, model and version from the XML response."""
     root = ET.fromstring(xml_text)
     if root.get("status") != "success":
         detail = " ".join(t.strip() for t in root.itertext() if t.strip())

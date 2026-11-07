@@ -53,15 +53,15 @@ def test_example_inventory_gives_the_four_expected_cases():
 @pytest.mark.parametrize(
     "version, expected",
     [
-        ("11.1.6", ("patch", "11.1.6-h39")),  # bonne maintenance, hotfix manquant
-        ("11.1.6-h38", ("patch", "11.1.6-h39")),  # un hotfix trop tôt
-        ("11.1.6-h39", None),  # pile le correctif
-        ("11.1.8", ("patch", "11.1.10-h35")),  # pas de correctif sur 11.1.8 : le suivant
+        ("11.1.6", ("patch", "11.1.6-h39")),  # right maintenance release, missing hotfix
+        ("11.1.6-h38", ("patch", "11.1.6-h39")),  # one hotfix too early
+        ("11.1.6-h39", None),  # exactly the fix
+        ("11.1.8", ("patch", "11.1.10-h35")),  # no fix on 11.1.8: the next one
         ("11.1.16", ("patch", "11.1.16-h3")),
-        ("11.1.17", None),  # plus récent que tous les correctifs
-        ("12.2.3", ("patch", "12.2.4")),  # le piège 902, côté affecté
-        ("12.2.4", None),  # le piège 902, côté corrigé
-        ("10.1.14", None),  # branche absente de l'avis
+        ("11.1.17", None),  # newer than every fix
+        ("12.2.3", ("patch", "12.2.4")),  # the 902 trap, affected side
+        ("12.2.4", None),  # the 902 trap, fixed side
+        ("10.1.14", None),  # branch not in the advisory
     ],
 )
 def test_panos_versions(version, expected):
@@ -72,11 +72,11 @@ def test_panos_versions(version, expected):
     "version, expected",
     [
         ("7.6.3", ("patch", "7.6.9")),
-        ("7.6.8", ("patch", "7.6.9")),  # dernière version touchée
+        ("7.6.8", ("patch", "7.6.9")),  # last affected version
         ("7.6.9", None),
         ("7.6.10", None),
-        ("7.2.5", ("migrate", None)),  # branche sans correctif
-        ("8.0.1", None),  # branche non touchée
+        ("7.2.5", ("migrate", None)),  # branch with no fix
+        ("8.0.1", None),  # branch not affected
     ],
 )
 def test_fortios_versions(version, expected):

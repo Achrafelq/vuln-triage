@@ -44,7 +44,7 @@ def test_refresh_keeps_declared_version_when_unreachable():
 
 def test_refresh_without_secret_does_not_call_the_firewall():
     def must_not_run(host, secret, verify):
-        raise AssertionError("le firewall n'aurait pas dû être appelé")
+        raise AssertionError("the firewall should not have been called")
 
     devices, notes = live.refresh(_devices(), env={}, clients={"paloalto": must_not_run})
 

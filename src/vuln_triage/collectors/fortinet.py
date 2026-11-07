@@ -19,7 +19,7 @@ REMEDIATION_RE = re.compile(r"^(?P<product>\S+)\s+(?P<branch>\d+\.\d+):\s*(?P<ac
 EXPLOITED_RE = re.compile(r"(?<!not )(?<!not been )exploited in the wild", re.IGNORECASE)
 
 def fetch_index(timeout: int = 30) -> dict[str, str]:
-    """{url du CSAF: texte de l'avis dans le RSS}."""
+    """{CSAF url: advisory text from the RSS feed}."""
     resp = requests.get(RSS_URL, headers=HEADERS, timeout=timeout)
     resp.raise_for_status()
     root = ET.fromstring(resp.content)
@@ -32,13 +32,13 @@ def fetch_index(timeout: int = 30) -> dict[str, str]:
 
 
 def fetch_csaf(url: str, timeout: int = 30) -> dict:
-    """Télécharge un fichier CSAF Fortinet."""
+    """Download one Fortinet CSAF file."""
     resp = requests.get(url, headers=HEADERS, timeout=timeout)
     resp.raise_for_status()
     return resp.json()
 
 def _says_exploited(text: str) -> bool:
-    """Le vendeur écrit-il que la faille est exploitée ?"""
+    """Does the vendor say the flaw is exploited?"""
     return bool(EXPLOITED_RE.search(text))
 
 
@@ -51,7 +51,7 @@ def _clean(product_id: str) -> tuple[str, str]:
 
 
 def _ranges_from_id(product_id: str, status: str) -> list[VersionRange]:
-    """Traduit une chaîne de product_status en plages."""
+    """Turn a product_status string into version ranges."""
     product, rest = _clean(product_id)
     if not rest:
         return []
@@ -67,7 +67,7 @@ def _ranges_from_id(product_id: str, status: str) -> list[VersionRange]:
 
 
 def _ranges_from_remediation(details: str) -> list[VersionRange]:
-    """'FortiOS 7.6: Upgrade to upcoming 7.6.9 or above' -> plage corrigée."""
+    """'FortiOS 7.6: Upgrade to upcoming 7.6.9 or above' -> fixed range."""
     out: list[VersionRange] = []
     for line in details.splitlines():
         m = REMEDIATION_RE.match(line.strip())
@@ -84,7 +84,7 @@ def _ranges_from_remediation(details: str) -> list[VersionRange]:
 
 
 def parse(data: dict, rss_text: str = "") -> list[Advisory]:
-    """Un CSAF Fortinet peut couvrir plusieurs CVE : un Advisory par CVE."""
+    """One Fortinet CSAF file can cover several CVEs: one Advisory per CVE."""
     exploited = _says_exploited(json.dumps(data) + " " + rss_text)
     doc = data["document"]
     tracking = doc["tracking"]
@@ -135,7 +135,7 @@ def parse(data: dict, rss_text: str = "") -> list[Advisory]:
 
 
 def load(index: dict[str, str] | None = None) -> dict[str, Advisory]:
-    """Avis Fortinet : ceux demandés, sinon ceux du RSS."""
+    """Fortinet advisories: the requested ones, otherwise those in the RSS feed."""
     if index is None:
         index = fetch_index()
     out: dict[str, Advisory] = {}

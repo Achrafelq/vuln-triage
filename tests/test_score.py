@@ -16,7 +16,7 @@ def _load(name: str) -> dict:
 
 
 def _records() -> list[dict]:
-    """Les vrais avis enregistrés, agrafés avec le KEV et l'EPSS d'exemple."""
+    """Real recorded advisories, with the sample KEV and EPSS attached."""
     advisories = [paloalto.parse(_load("paloalto_CVE-2026-0322.json"))]
     advisories += fortinet.parse(_load("fortinet_FG-IR-26-182.json"))
     kev_entries = kev.parse(_load("kev_sample.json"))
@@ -33,8 +33,8 @@ def _scored() -> dict[str, score.Scored]:
 def test_example_inventory_priorities():
     scored = _scored()
 
-    assert scored["FW-EDGE-01"].priority == "P0"  # 0322 : KEV + interface d'admin exposée
-    assert scored["FW-CORE-01"].priority == "P3"  # CVSS 2.1, rien d'exposé
+    assert scored["FW-EDGE-01"].priority == "P0"  # 0322: KEV + management interface exposed
+    assert scored["FW-CORE-01"].priority == "P3"  # CVSS 2.1, nothing exposed
     assert scored["FW-BRANCH-01"].priority == "P3"
     assert "no fix on this branch: migrate" in scored["FW-BRANCH-01"].reasons
 

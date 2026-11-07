@@ -6,11 +6,11 @@ STATUS_PATH = "/api/v2/monitor/system/status"
 
 
 class FortiosError(RuntimeError):
-    """Le firewall a répondu, mais pas ce qu'on attendait."""
+    """The firewall answered, but not with what we expected."""
 
 
 def fetch_status(host: str, token: str, verify: bool | str = True, timeout: int = 15) -> dict:
-    """Demande au firewall son statut. Le token part dans un en-tête, jamais dans l'URL."""
+    """Ask the firewall for its status. The token goes in a header, never in the URL."""
     resp = requests.get(
         f"https://{host}{STATUS_PATH}",
         headers={"Authorization": f"Bearer {token}"},
@@ -22,7 +22,7 @@ def fetch_status(host: str, token: str, verify: bool | str = True, timeout: int 
 
 
 def parse_status(data: dict) -> dict[str, str]:
-    """Extrait nom, modèle et version. FortiOS écrit 'v7.4.8' : on enlève le 'v'."""
+    """Extract hostname, model and version. FortiOS writes 'v7.4.8': strip the 'v'."""
     if data.get("status") != "success":
         raise FortiosError(f"error response: status {data.get('status')!r}")
     version = str(data.get("version", "")).strip().lstrip("vV")

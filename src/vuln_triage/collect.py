@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 
 def gather_advisories(errors: list[str]) -> list[Advisory]:
-    """Avis Palo Alto et Fortinet. Toute panne est notée dans `errors`, rien ne bloque."""
+    """Palo Alto and Fortinet advisories. Every failure goes to `errors`; nothing blocks."""
     advisories: list[Advisory] = []
 
     try:
@@ -48,7 +48,7 @@ def enrich(
     kev_entries: dict[str, KevEntry],
     epss_scores: dict[str, EpssScore],
 ) -> list[dict]:
-    """Agrafe à chaque avis sa fiche KEV et son score EPSS (ou None)."""
+    """Attach to each advisory its KEV entry and EPSS score (or None)."""
     records: list[dict] = []
     for adv in advisories:
         record = asdict(adv)
@@ -61,7 +61,7 @@ def enrich(
 
 
 def collect(out: Path) -> int:
-    """Vendeurs → KEV → EPSS → fichier JSON. Renvoie le nombre d'avis écrits."""
+    """Vendors -> KEV -> EPSS -> JSON file. Returns the number of advisories written."""
     errors: list[str] = []
     advisories = gather_advisories(errors)
     kev_entries = kev.load()

@@ -9,7 +9,7 @@ import yaml
 from vuln_triage.match import Match
 from vuln_triage.models import Device
 
-# Quelle partie de l'équipement l'avis vise-t-il ? On le devine depuis le texte du vendeur.
+# Which part of the device does the advisory target? Guessed from the vendor's text.
 COMPONENTS = (
     ("mgmt_exposed", "management interface exposed", r"management interface|web interface"),
     ("vpn_portal_enabled", "VPN portal exposed", r"GlobalProtect|SSL-?VPN"),
@@ -26,7 +26,7 @@ class Rules:
 @dataclass(frozen=True)
 class Scored:
     match: Match
-    priority: str  # "P0" à "P3"
+    priority: str  # "P0" to "P3"
     reasons: tuple[str, ...]
 
 
@@ -39,7 +39,7 @@ def load_rules(path: Path) -> Rules:
 
 
 def exposure(device: Device, record: dict) -> tuple[bool, str]:
-    """La partie vulnérable est-elle joignable depuis Internet ?"""
+    """Is the vulnerable component reachable from the Internet?"""
     text = f"{record.get('title', '')} {record.get('description', '')}"
     for flag, label, pattern in COMPONENTS:
         if re.search(pattern, text, re.IGNORECASE):
@@ -83,7 +83,7 @@ def score(m: Match, device: Device, rules: Rules) -> Scored:
 
 
 def score_all(matches: list[Match], devices: list[Device], rules: Rules) -> list[Scored]:
-    """Note chaque couple, puis trie : P0 d'abord, CVSS le plus haut en premier."""
+    """Score each pair, then sort: P0 first, highest CVSS first."""
     by_name = {d.name: d for d in devices}
     scored = [score(m, by_name[m.device], rules) for m in matches]
     return sorted(scored, key=lambda s: (s.priority, -(s.match.record.get("cvss") or 0)))

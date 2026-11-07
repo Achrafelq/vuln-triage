@@ -22,5 +22,5 @@ def test_parse_csaf_cve_2026_0322():
     affected = {r.version for r in pan_os if r.status == "affected"}
     assert "11.1.4-h37" in fixed
     assert "11.1.0" in affected
-    # Le piège 902 : même numéro sur "<12.2.4" (affecté) et ">=12.2.4" (corrigé)
+    # The 902 trap: same id on "<12.2.4" (affected) and ">=12.2.4" (fixed)
     assert "12.2.4" in fixed and "12.2.4" in affected

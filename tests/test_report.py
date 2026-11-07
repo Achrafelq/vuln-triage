@@ -48,7 +48,7 @@ def test_upgrade_plan_checks_what_the_target_really_fixes():
     assert plan["FW-EDGE-01"]["target"] == "11.1.6-h39"
     assert plan["FW-EDGE-01"]["fixes"] == 1
     assert plan["FW-CORE-01"]["target"] == "7.6.9"
-    assert "FW-BRANCH-01" not in plan  # rien à patcher : il faut migrer
+    assert "FW-BRANCH-01" not in plan  # nothing to patch: must migrate
 
 
 def test_incomplete_collection_is_shown_at_the_top():

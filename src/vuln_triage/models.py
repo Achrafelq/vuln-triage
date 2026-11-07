@@ -28,9 +28,9 @@ class EpssScore:
 @dataclass(frozen=True)
 class VersionRange:
     product: str  # "PAN-OS"
-    op: str  # "<" ou ">="
+    op: str  # "<" or ">="
     version: str  # "11.1.4-h37"
-    status: str  # "affected" ou "fixed"
+    status: str  # "affected" or "fixed"
 
 
 @dataclass(frozen=True)
@@ -50,13 +50,13 @@ class Advisory:
 @dataclass(frozen=True)
 class Device:
     name: str  # "FW-TLS-01"
-    vendor: str  # "paloalto" ou "fortinet"
-    product: str  # "PAN-OS" ou "FortiOS"
-    version: str  # "11.1.6-h39", toujours du texte
-    internet_facing: bool  # a au moins une interface sur Internet
-    mgmt_exposed: bool  # interface d'administration joignable depuis Internet
-    vpn_portal_enabled: bool  # GlobalProtect ou SSL-VPN actif
-    auth_portal_enabled: bool  # Authentication Portal / captive portal actif
-    host: str | None = None  # adresse de l'API, ex. "192.168.10.1" (optionnel)
-    secret_env: str | None = None  # NOM de la variable d'environnement qui contient la clé
-    tls_verify: bool | str = True  # True, False (lab) ou chemin vers le certificat du firewall
+    vendor: str  # "paloalto" or "fortinet"
+    product: str  # "PAN-OS" or "FortiOS"
+    version: str  # "11.1.6-h39", always a string
+    internet_facing: bool  # at least one interface on the Internet
+    mgmt_exposed: bool  # management interface reachable from the Internet
+    vpn_portal_enabled: bool  # GlobalProtect or SSL-VPN enabled
+    auth_portal_enabled: bool  # Authentication Portal / captive portal enabled
+    host: str | None = None  # API address, e.g. "192.168.10.1" (optional)
+    secret_env: str | None = None  # NAME of the environment variable holding the key
+    tls_verify: bool | str = True  # True, False (lab only) or path to the firewall certificate

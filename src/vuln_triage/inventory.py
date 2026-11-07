@@ -12,7 +12,7 @@ FORBIDDEN = ("api_key", "key", "token", "password", "secret")
 
 
 def _device(item: dict) -> Device:
-    """Vérifie un équipement de l'inventaire et le transforme en Device."""
+    """Validate one inventory entry and turn it into a Device."""
     name = item.get("name", "<sans nom>")
 
     for field in FORBIDDEN:
@@ -63,10 +63,10 @@ def _device(item: dict) -> Device:
 
 
 def parse(data: dict) -> list[Device]:
-    """Transforme le contenu du YAML en liste de Device."""
+    """Turn the YAML content into a list of Device."""
     return [_device(item) for item in data.get("devices", [])]
 
 
 def load(path: Path) -> list[Device]:
-    """Lit un fichier d'inventaire YAML."""
+    """Read a YAML inventory file."""
     return parse(yaml.safe_load(path.read_text()) or {})

@@ -18,10 +18,10 @@ def refresh(
     env: Mapping[str, str] = os.environ,
     clients: Mapping[str, Callable[..., str]] = CLIENTS,
 ) -> tuple[list[Device], list[str]]:
-    """Remplace la version déclarée par la version réelle lue sur l'équipement.
+    """Replace the declared version with the actual version read from the device.
 
-    Rien ne bloque : un équipement injoignable garde sa version déclarée,
-    et chaque problème est noté dans la liste renvoyée.
+    Nothing blocks: an unreachable device keeps its declared version,
+    and every problem is recorded in the returned list.
     """
     refreshed: list[Device] = []
     notes: list[str] = []

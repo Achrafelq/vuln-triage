@@ -17,7 +17,7 @@ CVE_RE = re.compile(r"CVE-\d{4}-\d{4,}")
 
 
 def fetch_index(timeout: int = 30) -> list[str]:
-    """CVE récentes listées dans le flux RSS."""
+    """Recent CVEs listed in the RSS feed."""
     resp = requests.get(RSS_URL, headers=HEADERS, timeout=timeout)
     resp.raise_for_status()
     root = ET.fromstring(resp.content)
@@ -30,14 +30,14 @@ def fetch_index(timeout: int = 30) -> list[str]:
 
 
 def fetch_csaf(cve_id: str, timeout: int = 30) -> dict:
-    """Télécharge l'avis CSAF d'une CVE."""
+    """Download the CSAF advisory for one CVE."""
     resp = requests.get(CSAF_URL.format(cve_id=cve_id), headers=HEADERS, timeout=timeout)
     resp.raise_for_status()
     return resp.json()
 
 
 def _ranges(branches: list[dict]) -> list[dict]:
-    """Parcourt l'arbre des produits et ramasse toutes les plages de versions."""
+    """Walk the product tree and collect every version range."""
     out: list[dict] = []
     for branch in branches:
         if branch.get("category") == "product_version_range":
@@ -47,7 +47,7 @@ def _ranges(branches: list[dict]) -> list[dict]:
 
 
 def parse(data: dict) -> Advisory:
-    """Transforme un CSAF Palo Alto en Advisory."""
+    """Turn a Palo Alto CSAF document into an Advisory."""
     doc = data["document"]
     vuln = data["vulnerabilities"][0]
     fixed_ids = set(vuln.get("product_status", {}).get("fixed", []))
@@ -94,6 +94,6 @@ def parse(data: dict) -> Advisory:
 
 
 def load(cve_ids: list[str] | None = None) -> dict[str, Advisory]:
-    """Avis Palo Alto : ceux demandés, sinon ceux du RSS."""
+    """Palo Alto advisories: the requested ones, otherwise those in the RSS feed."""
     ids = cve_ids if cve_ids is not None else fetch_index()
     return {cve_id: parse(fetch_csaf(cve_id)) for cve_id in ids}
