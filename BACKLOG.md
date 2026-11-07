@@ -11,3 +11,4 @@ Idées volontairement laissées hors du périmètre de P1.
 - **Autres vendeurs** : F5 en premier, puis Cisco, Ivanti, Citrix.
 - **Panorama** : lire les versions de tous les firewalls gérés en une seule requête, au lieu d'un appel par équipement.
 - **Exposition lue par API** : comparer les interfaces et portails réellement actifs avec ce que déclare l'inventaire.
+- **Panorama ou firewall** : le CSAF dit seulement « PAN-OS » ; certains avis (ex. CVE-2026-0318) ne concernent que Panorama, et ce n'est écrit que dans la description. Aujourd'hui, l'outil les signale par prudence sur les firewalls aussi.
