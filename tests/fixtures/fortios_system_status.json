@@ -1,0 +1,18 @@
+{
+  "http_method": "GET",
+  "results": {
+    "model_name": "FortiGate",
+    "model_number": "VM64",
+    "model": "FGVMK6",
+    "hostname": "FW-LAB-FG",
+    "log_disk_status": "available"
+  },
+  "vdom": "root",
+  "path": "system",
+  "name": "status",
+  "action": "",
+  "status": "success",
+  "serial": "FGVMEVXXXXXXXXXX",
+  "version": "v7.4.8",
+  "build": 2795
+}
