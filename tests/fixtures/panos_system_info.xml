@@ -1,0 +1,1 @@
+<response status="success"><result><system><hostname>FW-LAB-PA</hostname><ip-address>192.168.10.1</ip-address><model>PA-VM</model><serial>007951000123456</serial><sw-version>11.1.6-h39</sw-version><app-version>8950-9310</app-version><threat-version>8950-9310</threat-version><multi-vsys>off</multi-vsys><operational-mode>normal</operational-mode></system></result></response>
