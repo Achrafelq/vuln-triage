@@ -19,28 +19,28 @@ def gather_advisories(errors: list[str]) -> list[Advisory]:
     try:
         pa_ids = paloalto.fetch_index()
     except Exception as exc:
-        errors.append(f"Palo Alto : index RSS inaccessible ({exc})")
+        errors.append(f"Palo Alto: RSS index unreachable ({exc})")
         pa_ids = []
     for cve_id in pa_ids:
         try:
             advisories.append(paloalto.parse(paloalto.fetch_csaf(cve_id)))
         except Exception as exc:
-            errors.append(f"Palo Alto {cve_id} ignoré ({exc})")
+            errors.append(f"Palo Alto {cve_id} skipped ({exc})")
 
     try:
         ft_urls = fortinet.fetch_index()
     except Exception as exc:
-        errors.append(f"Fortinet : index RSS inaccessible ({exc})")
+        errors.append(f"Fortinet: RSS index unreachable ({exc})")
         ft_urls = {}
     for url in ft_urls:
         try:
             advisories.extend(fortinet.parse(fortinet.fetch_csaf(url), ft_urls[url]))
         except Exception as exc:
-            errors.append(f"Fortinet {url} ignoré ({exc})")
+            errors.append(f"Fortinet {url} skipped ({exc})")
 
     for err in errors:
         log.warning(err)
-    log.info("%d avis vendeurs collectés", len(advisories))
+    log.info("%d vendor advisories collected", len(advisories))
     return advisories
 
 def enrich(

@@ -44,7 +44,7 @@ def check(device: Device, record: dict) -> Match | None:
     """Ce firewall est-il touché par cet avis ? None si non."""
     v = parse_version(device.version)
     if v is None:
-        raise ValueError(f"{device.name} : version illisible {device.version!r}")
+        raise ValueError(f"{device.name}: unreadable version {device.version!r}")
     branch = _branch(v)
 
     affected_bounds: list[tuple[str, Version]] = []

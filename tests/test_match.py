@@ -84,7 +84,7 @@ def test_fortios_versions(version, expected):
 
 
 def test_unreadable_device_version_is_refused():
-    with pytest.raises(ValueError, match="illisible"):
+    with pytest.raises(ValueError, match="unreadable"):
         match.match_all([_device("PAN-OS", "11.1.x")], _records())
 
 

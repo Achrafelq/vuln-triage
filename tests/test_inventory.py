@@ -19,7 +19,7 @@ def test_load_example_inventory():
 
 def test_version_without_quotes_is_refused():
     data = {"devices": [{"name": "FW-X", "vendor": "fortinet", "version": 7.10}]}
-    with pytest.raises(ValueError, match="guillemets"):
+    with pytest.raises(ValueError, match="quoted"):
         inventory.parse(data)
 
 

@@ -24,10 +24,10 @@ def fetch_status(host: str, token: str, verify: bool | str = True, timeout: int 
 def parse_status(data: dict) -> dict[str, str]:
     """Extrait nom, modèle et version. FortiOS écrit 'v7.4.8' : on enlève le 'v'."""
     if data.get("status") != "success":
-        raise FortiosError(f"réponse en erreur : statut {data.get('status')!r}")
+        raise FortiosError(f"error response: status {data.get('status')!r}")
     version = str(data.get("version", "")).strip().lstrip("vV")
     if not version:
-        raise FortiosError("réponse sans version")
+        raise FortiosError("response has no version")
     results = data.get("results", {})
     model = f"{results.get('model_name', '')} {results.get('model_number', '')}".strip()
     return {"hostname": results.get("hostname", ""), "model": model, "version": version}

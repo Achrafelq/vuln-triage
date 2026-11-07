@@ -29,7 +29,7 @@ def test_refresh_uses_live_version_and_flags_drift():
 
     assert devices[0].version == "11.1.6-h39"
     assert devices[1].version == "11.1.6"
-    assert notes == ["FW-API : version déclarée 11.1.6, version réelle 11.1.6-h39"]
+    assert notes == ["FW-API: declared version 11.1.6, actual version 11.1.6-h39"]
 
 
 def test_refresh_keeps_declared_version_when_unreachable():
@@ -39,7 +39,7 @@ def test_refresh_keeps_declared_version_when_unreachable():
     devices, notes = live.refresh(_devices(), env={"PA_KEY": "x"}, clients={"paloalto": down})
 
     assert devices[0].version == "11.1.6"
-    assert "injoignable" in notes[0]
+    assert "unreachable" in notes[0]
 
 
 def test_refresh_without_secret_does_not_call_the_firewall():
@@ -49,7 +49,7 @@ def test_refresh_without_secret_does_not_call_the_firewall():
     devices, notes = live.refresh(_devices(), env={}, clients={"paloalto": must_not_run})
 
     assert devices[0].version == "11.1.6"
-    assert "PA_KEY vide" in notes[0]
+    assert "PA_KEY is empty" in notes[0]
 
 
 def test_secret_in_inventory_is_refused():

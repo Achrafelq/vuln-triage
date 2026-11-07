@@ -1,0 +1,9 @@
+# vuln-triage priority rules. Change thresholds here, not in the code.
+#
+#   P0: exploited (KEV or vendor) AND the vulnerable component is exposed
+#   P1: exploited but not exposed, OR likely (EPSS >= threshold) AND exposed
+#   P2: severe (CVSS >= threshold)
+#   P3: everything else
+
+epss_threshold: 0.10   # 10% probability of exploitation within 30 days
+cvss_threshold: 7.0

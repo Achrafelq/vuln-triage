@@ -18,34 +18,34 @@ def _device(item: dict) -> Device:
     for field in FORBIDDEN:
         if field in item:
             raise ValueError(
-                f"{name} : '{field}' interdit dans l'inventaire. Ne mets jamais de secret "
-                "dans ce fichier : indique le NOM d'une variable d'environnement dans secret_env"
+                f"{name}: '{field}' is not allowed in the inventory. Never put a secret "
+                "in this file: set secret_env to the NAME of an environment variable"
             )
 
     vendor = item.get("vendor")
     if vendor not in PRODUCTS:
         raise ValueError(
-            f"{name} : vendeur '{vendor}' inconnu (attendu : paloalto ou fortinet)"
+            f"{name}: unknown vendor '{vendor}' (expected: paloalto or fortinet)"
         )
 
     version = item.get("version")
     if not isinstance(version, str):
         raise ValueError(
-            f'{name} : version {version!r} à mettre entre guillemets, ex. "7.4.8"'
+            f'{name}: version {version!r} must be quoted, e.g. "7.4.8"'
         )
 
     for flag in FLAGS:
         if not isinstance(item.get(flag), bool):
-            raise ValueError(f"{name} : '{flag}' manquant ou différent de true/false")
+            raise ValueError(f"{name}: '{flag}' is missing or not true/false")
 
     host = item.get("host")
     secret_env = item.get("secret_env")
     if host is not None and not isinstance(secret_env, str):
-        raise ValueError(f"{name} : 'host' est renseigné, il faut aussi 'secret_env'")
+        raise ValueError(f"{name}: 'host' is set, so 'secret_env' is required")
 
     tls_verify = item.get("tls_verify", True)
     if not isinstance(tls_verify, bool | str):
-        raise ValueError(f"{name} : 'tls_verify' doit être true, false ou un chemin")
+        raise ValueError(f"{name}: 'tls_verify' must be true, false or a file path")
 
     return Device(
         name=name,

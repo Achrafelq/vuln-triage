@@ -29,13 +29,13 @@ def parse_system_info(xml_text: str) -> dict[str, str]:
     root = ET.fromstring(xml_text)
     if root.get("status") != "success":
         detail = " ".join(t.strip() for t in root.itertext() if t.strip())
-        raise PanosError(f"réponse en erreur : {detail or 'sans détail'}")
+        raise PanosError(f"error response: {detail or 'no details'}")
     system = root.find("./result/system")
     if system is None:
-        raise PanosError("réponse sans bloc <system>")
+        raise PanosError("response has no <system> block")
     version = system.findtext("sw-version", "").strip()
     if not version:
-        raise PanosError("réponse sans <sw-version>")
+        raise PanosError("response has no <sw-version>")
     return {
         "hostname": system.findtext("hostname", "").strip(),
         "model": system.findtext("model", "").strip(),

@@ -32,23 +32,23 @@ def refresh(
 
         secret = env.get(dev.secret_env or "")
         if not secret:
-            notes.append(f"{dev.name} : variable {dev.secret_env} vide, version déclarée gardée")
+            notes.append(f"{dev.name}: {dev.secret_env} is empty, keeping declared version")
             refreshed.append(dev)
             continue
 
         if dev.tls_verify is False:
-            notes.append(f"{dev.name} : certificat TLS non vérifié (acceptable en lab uniquement)")
+            notes.append(f"{dev.name}: TLS certificate not verified (lab use only)")
 
         try:
             live_version = clients[dev.vendor](dev.host, secret, dev.tls_verify)
         except Exception as exc:
-            notes.append(f"{dev.name} : injoignable ({exc}), version déclarée gardée")
+            notes.append(f"{dev.name}: unreachable ({exc}), keeping declared version")
             refreshed.append(dev)
             continue
 
         if live_version != dev.version:
             notes.append(
-                f"{dev.name} : version déclarée {dev.version}, version réelle {live_version}"
+                f"{dev.name}: declared version {dev.version}, actual version {live_version}"
             )
         refreshed.append(replace(dev, version=live_version))
     return refreshed, notes
