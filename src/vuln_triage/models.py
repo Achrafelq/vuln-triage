@@ -57,3 +57,6 @@ class Device:
     mgmt_exposed: bool  # interface d'administration joignable depuis Internet
     vpn_portal_enabled: bool  # GlobalProtect ou SSL-VPN actif
     auth_portal_enabled: bool  # Authentication Portal / captive portal actif
+    host: str | None = None  # adresse de l'API, ex. "192.168.10.1" (optionnel)
+    secret_env: str | None = None  # NOM de la variable d'environnement qui contient la clé
+    tls_verify: bool | str = True  # True, False (lab) ou chemin vers le certificat du firewall

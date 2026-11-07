@@ -8,11 +8,19 @@ from vuln_triage.models import Device
 
 PRODUCTS = {"paloalto": "PAN-OS", "fortinet": "FortiOS"}
 FLAGS = ("internet_facing", "mgmt_exposed", "vpn_portal_enabled", "auth_portal_enabled")
+FORBIDDEN = ("api_key", "key", "token", "password", "secret")
 
 
 def _device(item: dict) -> Device:
     """Vérifie un équipement de l'inventaire et le transforme en Device."""
     name = item.get("name", "<sans nom>")
+
+    for field in FORBIDDEN:
+        if field in item:
+            raise ValueError(
+                f"{name} : '{field}' interdit dans l'inventaire. Ne mets jamais de secret "
+                "dans ce fichier : indique le NOM d'une variable d'environnement dans secret_env"
+            )
 
     vendor = item.get("vendor")
     if vendor not in PRODUCTS:
@@ -30,6 +38,15 @@ def _device(item: dict) -> Device:
         if not isinstance(item.get(flag), bool):
             raise ValueError(f"{name} : '{flag}' manquant ou différent de true/false")
 
+    host = item.get("host")
+    secret_env = item.get("secret_env")
+    if host is not None and not isinstance(secret_env, str):
+        raise ValueError(f"{name} : 'host' est renseigné, il faut aussi 'secret_env'")
+
+    tls_verify = item.get("tls_verify", True)
+    if not isinstance(tls_verify, bool | str):
+        raise ValueError(f"{name} : 'tls_verify' doit être true, false ou un chemin")
+
     return Device(
         name=name,
         vendor=vendor,
@@ -39,6 +56,9 @@ def _device(item: dict) -> Device:
         mgmt_exposed=item["mgmt_exposed"],
         vpn_portal_enabled=item["vpn_portal_enabled"],
         auth_portal_enabled=item["auth_portal_enabled"],
+        host=host,
+        secret_env=secret_env,
+        tls_verify=tls_verify,
     )
 
 

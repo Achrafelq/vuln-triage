@@ -9,3 +9,5 @@ Idées volontairement laissées hors du périmètre de P1.
 - **KEV + composant tiers** (PHP, Node.js) : P0 ou P1 ? À trancher dans `rules.yaml`.
 - **Avis Fortinet multi-CVE** : le drapeau « exploité » s'applique à toutes les CVE de l'avis, approximation à affiner.
 - **Autres vendeurs** : F5 en premier, puis Cisco, Ivanti, Citrix.
+- **Panorama** : lire les versions de tous les firewalls gérés en une seule requête, au lieu d'un appel par équipement.
+- **Exposition lue par API** : comparer les interfaces et portails réellement actifs avec ce que déclare l'inventaire.
