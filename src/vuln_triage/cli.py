@@ -5,7 +5,7 @@ import json
 import logging
 from pathlib import Path
 
-from vuln_triage import inventory, live, match, score
+from vuln_triage import inventory, live, match, report, score
 from vuln_triage.collect import collect
 
 
@@ -60,6 +60,20 @@ def _show_scores(advisories_path: Path, inventory_path: Path, rules_path: Path) 
         print(f"! incomplete collection: {err}")
 
 
+def _write_report(
+    advisories_path: Path, inventory_path: Path, rules_path: Path, out_dir: Path
+) -> None:
+    payload = json.loads(advisories_path.read_text())
+    devices = inventory.load(inventory_path)
+    rules = score.load_rules(rules_path)
+    results = score.score_all(match.match_all(devices, payload["advisories"]), devices, rules)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "report.md").write_text(report.render_markdown(results, devices, payload, rules))
+    report.write_csv(results, out_dir / "report.csv")
+    p0 = sum(1 for s in results if s.priority == "P0")
+    print(f"{out_dir / 'report.md'} and {out_dir / 'report.csv'} written ({p0} P0)")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="vuln-triage",
@@ -100,6 +114,12 @@ def main() -> None:
     p_score.add_argument("--inventory", type=Path, default=Path("inventory.example.yaml"))
     p_score.add_argument("--rules", type=Path, default=Path("rules.yaml"))
 
+    p_report = sub.add_parser("report", help="Write report.md and report.csv")
+    p_report.add_argument("--advisories", type=Path, default=Path("data/advisories.json"))
+    p_report.add_argument("--inventory", type=Path, default=Path("inventory.example.yaml"))
+    p_report.add_argument("--rules", type=Path, default=Path("rules.yaml"))
+    p_report.add_argument("--out", type=Path, default=Path("reports"))
+
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 
@@ -112,3 +132,5 @@ def main() -> None:
         _show_matches(args.advisories, args.inventory)
     elif args.command == "score":
         _show_scores(args.advisories, args.inventory, args.rules)
+    elif args.command == "report":
+        _write_report(args.advisories, args.inventory, args.rules, args.out)
