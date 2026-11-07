@@ -114,6 +114,12 @@ def main() -> None:
     p_score.add_argument("--inventory", type=Path, default=Path("inventory.example.yaml"))
     p_score.add_argument("--rules", type=Path, default=Path("rules.yaml"))
 
+    p_run = sub.add_parser("run", help="collect + report in one go (for cron)")
+    p_run.add_argument("--advisories", type=Path, default=Path("data/advisories.json"))
+    p_run.add_argument("--inventory", type=Path, default=Path("inventory.example.yaml"))
+    p_run.add_argument("--rules", type=Path, default=Path("rules.yaml"))
+    p_run.add_argument("--out", type=Path, default=Path("reports"))
+
     p_report = sub.add_parser("report", help="Write report.md and report.csv")
     p_report.add_argument("--advisories", type=Path, default=Path("data/advisories.json"))
     p_report.add_argument("--inventory", type=Path, default=Path("inventory.example.yaml"))
@@ -133,4 +139,8 @@ def main() -> None:
     elif args.command == "score":
         _show_scores(args.advisories, args.inventory, args.rules)
     elif args.command == "report":
+        _write_report(args.advisories, args.inventory, args.rules, args.out)
+    elif args.command == "run":
+        count = collect(args.advisories)
+        print(f"{count} advisories written to {args.advisories}")
         _write_report(args.advisories, args.inventory, args.rules, args.out)

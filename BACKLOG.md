@@ -12,3 +12,5 @@ Idées volontairement laissées hors du périmètre de P1.
 - **Panorama** : lire les versions de tous les firewalls gérés en une seule requête, au lieu d'un appel par équipement.
 - **Exposition lue par API** : comparer les interfaces et portails réellement actifs avec ce que déclare l'inventaire.
 - **Panorama ou firewall** : le CSAF dit seulement « PAN-OS » ; certains avis (ex. CVE-2026-0318) ne concernent que Panorama, et ce n'est écrit que dans la description. Aujourd'hui, l'outil les signale par prudence sur les firewalls aussi.
+- **Rapport quotidien sur une machine du réseau** : VM Ubuntu d'administration dans le lab (réseau MGMT), `cron` qui lance `vuln-triage run --inventory inventory.yaml` chaque matin.
+- **Rapport d'exemple quotidien sur GitHub** (vitrine) : workflow planifié, si utile pour la démo.
